@@ -35,6 +35,25 @@ char* rot13(char name[]) {
     return name;
 }
 
+char* rot13decrypt(char name[]) {
+    for (unsigned int i = 0; i < strlen(name); i++)
+    {
+        if(name[i]>='A' && name[i]<='Z') {
+            name[i] -= 13;
+            if (name[i] < 'A') {
+                name[i]+=26;
+            }
+        }
+        if(name[i]>='a' && name[i]<='z') {
+            if (name[i] - 13 < 'a') {
+                name[i] += 26;
+            }
+            name[i] -= 13;
+        }
+    }
+    return name;
+}
+
 long long int binarytodec (long long int biner) {
 	long long int  binary_num, decimal_num = 0, base = 1, rem;  
 	while ( biner > 0)  
@@ -77,15 +96,39 @@ char* vignere(char name[]){
     for (unsigned int i=0;i<strlen(name);i++) {
         if(name[i]>='A' && name[i]<='Z') {
             name[i] += key[Kcount] - 'A';
-            if (name[i]>'Z') {
+            if (name[i] > 'Z') {
                 name[i]-=26;
             }
         }
         if(name[i]>='a' && name[i]<='z') {
-            if (name[i] + key[Kcount] - 'A' >'z') {
+            if (name[i] + key[Kcount] - 'A' > 'z') {
                 name[i] -= 26;
             }
             name[i] += key[Kcount] - 'A';
+        }
+        Kcount++;
+        if(Kcount == 5) {
+            Kcount=0;
+        }
+    }
+    return name;
+}
+
+char* vigneredecrypt(char name[]){
+    char key[5] = "SISOP";
+    int Kcount = 0;
+    for (unsigned int i=0;i<strlen(name);i++) {
+        if(name[i]>='A' && name[i]<='Z') {
+            name[i] -= key[Kcount] - 'A';
+            if (name[i] < 'A') {
+                name[i]+=26;
+            }
+        }
+        if(name[i]>='a' && name[i]<='z') {
+            if (name[i] - key[Kcount] + 'A' < 'a') {
+                name[i] += 26;
+            }
+            name[i] -= key[Kcount] - 'A';
         }
         Kcount++;
         if(Kcount == 5) {
@@ -134,8 +177,11 @@ int main () {
     char newname[100];
     scanf("%s",name);
     printf("%s\n",vignere(name));
+    printf("%s\n",vigneredecrypt(name));
+    printf("%s\n",atbash(name));
     printf("%s\n",atbash(name));
     printf("%s\n",rot13(name));
+    printf("%s\n",rot13decrypt(name));
     printf("%d\n",casebinary(name));
     printf("%s\n",lowercase(name));
 }
