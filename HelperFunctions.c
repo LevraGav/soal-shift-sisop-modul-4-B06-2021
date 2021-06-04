@@ -139,12 +139,11 @@ char* vigneredecrypt(char name[]){
     return name;
 }
 
-void rx(char name[]) {
-    char name2[100];
-    char *res;
-	res = rot13(name);
-	strcpy(name2,res);
-    printf("%s\n",name2);
+char* rx(char name[]) {
+	rot13(name);
+	char* ptr = strchr(name,'.');
+	rot13decrypt(ptr);
+	return name;
 }
 
 char* atoz(char name[]){
@@ -152,7 +151,18 @@ char* atoz(char name[]){
     char* ptr = strchr(name,'.');
     atbash(ptr);
     return name;
-} 
+}
+
+char* rxrename(char name[]) {
+	atbash(name);
+    char* ptr = strchr(name,'.');
+    atbash(ptr);
+    char ext[20];
+    strcpy(ext,ptr);
+    vignere(name);
+    strcpy(ptr,ext);
+	return name;
+}
 
 void aisa(char name[]){
 	//pass
@@ -167,7 +177,8 @@ char* checkName(char filedir[]){
             char* ptr = strstr( filedir, "RX_" );
             ptr = strchr(ptr, '/');
             ptr++;
-            rx(ptr);
+            atoz(ptr);
+            return rx(ptr);
         }
         else if (strstr(filedir,"AtoZ_")!=NULL){
             char* ptr = strstr( filedir, "AtoZ_" );
@@ -180,6 +191,12 @@ char* checkName(char filedir[]){
             ptr = strchr(ptr, '/');
             ptr++;
             aisa(ptr);
+        }
+        else if (strstr(filedir,"abc")!=NULL){
+            char* ptr = strstr( filedir, "abc" );
+            ptr = strchr(ptr, '/');
+            ptr++;
+            rxrename(ptr);
         }
     }
 } 
