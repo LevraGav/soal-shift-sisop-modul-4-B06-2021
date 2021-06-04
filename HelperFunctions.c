@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <ctype.h>
 
+
+
 char* atbash(char name[]) {
     for (unsigned int i=0;i<strlen(name);i++) {
         if(name[i]>='A' && name[i]<='Z') {
@@ -67,8 +69,7 @@ long long int binarytodec (long long int biner) {
 }
 
 long long int casebinary(char name[]) {
-    unsigned int len = strlen(name);
-    char binary[len];
+    char binary[100];
     for (unsigned int i = 0; i < strlen(name); i++)
     {
         if(name[i]>='A' && name[i]<='Z') {
@@ -146,29 +147,40 @@ void rx(char name[]) {
     printf("%s\n",name2);
 }
 
-void atoz(char name[]){
-	//pass
+char* atoz(char name[]){
+	atbash(name);
+    char* ptr = strchr(name,'.');
+    atbash(ptr);
+    return name;
 } 
 
 void aisa(char name[]){
 	//pass
 } 
 
-void checkName(char name[]){
-	if (strstr(name,"RX_")!=NULL){
-        char* ptr = strstr( name, "RX_" );
-        ptr+=3;
-        rx(ptr);
+char* checkName(char filedir[]){
+    if (strcmp(filedir,"/") == 0 ) {
+        filedir = "usr/downloads/blabla";
     }
-    else if (strstr(name,"A_is_a_")!=NULL){
-        char* ptr = strstr( name, "AtoZ_" );
-        ptr+=5;
-        atoz(ptr);
-    }
-     else if (strstr(name,"A_is_a_")!=NULL){
-        char* ptr = strstr( name, "A_is_a_" );
-        ptr+=7;
-        aisa(ptr);
+	else {
+        if (strstr(filedir,"RX_")!=NULL){
+            char* ptr = strstr( filedir, "RX_" );
+            ptr = strchr(ptr, '/');
+            ptr++;
+            rx(ptr);
+        }
+        else if (strstr(filedir,"AtoZ_")!=NULL){
+            char* ptr = strstr( filedir, "AtoZ_" );
+            ptr = strchr(ptr, '/');
+            ptr++;
+            return atoz(ptr);
+        }
+        else if (strstr(filedir,"A_is_a_")!=NULL){
+            char* ptr = strstr( filedir, "A_is_a_" );
+            ptr = strchr(ptr, '/');
+            ptr++;
+            aisa(ptr);
+        }
     }
 } 
 
@@ -176,12 +188,14 @@ int main () {
     char name[100];
     char newname[100];
     scanf("%s",name);
-    printf("%s\n",vignere(name));
-    printf("%s\n",vigneredecrypt(name));
-    printf("%s\n",atbash(name));
-    printf("%s\n",atbash(name));
-    printf("%s\n",rot13(name));
-    printf("%s\n",rot13decrypt(name));
-    printf("%d\n",casebinary(name));
-    printf("%s\n",lowercase(name));
+    checkName(name);
+    printf("%s\n",name);
+    // printf("%s\n",vignere(name));
+    // printf("%s\n",vigneredecrypt(name));
+    // printf("%s\n",atbash(name));
+    // printf("%s\n",atbash(name));
+    // printf("%s\n",rot13(name));
+    // printf("%s\n",rot13decrypt(name));
+    // printf("%d\n",casebinary(name));
+    // printf("%s\n",lowercase(name));
 }
