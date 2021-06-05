@@ -8,8 +8,16 @@
 #include <errno.h>
 #include <sys/time.h>
 
-const char *dirpath = "/home/bayu/Downloads";
+const char *dirpath = "/home/nor/Downloads";
 int algo = 0; 
+FILE * fp;
+
+void *updatelog(char *command){
+    fp = fopen ("/home/nor/log.txt", "a");
+    // fprintf(fp, "punten \n");
+    fprintf(fp, "INFO::28052021-10:00:00:%s:: \n", command);
+    fclose(fp);
+}
 
 char* atbash(char name[]) {
     for (unsigned int i=0;i<strlen(name);i++){
@@ -333,6 +341,8 @@ static int xmp_rename(const char *from, const char *to)
 	if (res == -1)
 		return -errno;
     printf("selesai rename\n");
+    char cmd[20] = "RENAME"; 
+    updatelog(cmd);
 	return 0;
 }
 
@@ -364,6 +374,8 @@ static int xmp_mkdir(const char *path, mode_t mode)
         return -errno;
 
     printf("selesai mkdir\n");
+    char cmd[20] = "MKDIR"; 
+    updatelog(cmd);
     return 0;
 }
 
