@@ -13,9 +13,12 @@ int algo = 0;
 FILE * fp;
 
 void *updatelog(char *command){
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
     fp = fopen ("/home/nor/log.txt", "a");
     // fprintf(fp, "punten \n");
-    fprintf(fp, "INFO::28052021-10:00:00:%s:: \n", command);
+    // fprintf(fp, "INFO::28052021-10:00:00:%s:: \n", command);
+    fprintf(fp, "INFO::%02d%02d%d-%02d:%02d:%02d:%s:: \n", tm.tm_mday, tm.tm_mon+1, tm.tm_year+1900, tm.tm_hour, tm.tm_min, tm.tm_sec, command);
     fclose(fp);
 }
 
