@@ -229,7 +229,7 @@ static int xmp_mkdir(const char path, mode_t mode)
 {
     char ptr = strchr(path, '/') ;
     if (strstr(ptr, "/AtoZ_")) {
-        char fullpath = {0};
+        char fullpath[1024] = {0};
         sprintf(fullpath, "%s%s", dirpath, path) ;
         // tbd log
     }
@@ -284,10 +284,8 @@ static int xmp_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
             res = (filler(buf, de->d_name, &st, 0)) ;
         }
         if (algo == 1) {
-            if (de->d_type & DT_DIR) {
-                atoz(de->d_name);
-                res = (filler(buf, de->d_name, &st, 0));
-            }
+            atoz(de->d_name);
+            res = (filler(buf, de->d_name, &st, 0));
         }
         else 
             res = (filler(buf, de->d_name, &st, 0));
