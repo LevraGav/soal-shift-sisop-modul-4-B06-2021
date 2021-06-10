@@ -12,14 +12,22 @@ const char *dirpath = "/home/nor/Downloads";
 int algo = 0; 
 FILE * fp;
 
-void *updatelog(char *command){
+void *updatelog(char *level, char *command, char *desc){
+    char time_now[100] = {0};
     time_t t = time(NULL);
     struct tm tm = *localtime(&t);
     fp = fopen ("/home/nor/SinSeiFS.log", "a");
-    // fprintf(fp, "punten \n");
-    // fprintf(fp, "INFO::28052021-10:00:00:%s:: \n", command);
-    fprintf(fp, "INFO::%02d%02d%d-%02d:%02d:%02d:%s:: \n", tm.tm_mday, tm.tm_mon+1, tm.tm_year+1900, tm.tm_hour, tm.tm_min, tm.tm_sec, command);
+    fprintf(fp, "%s::%02d%02d%d-%02d:%02d:%02d:%s::%s \n", level, tm.tm_mday, tm.tm_mon+1, tm.tm_year+1900, tm.tm_hour, tm.tm_min, tm.tm_sec, command,desc);
     fclose(fp);
+}
+
+void combinePath(const char* a, char* b, char* c){
+    if(strcmp(a,"/")==0){
+        a = b;
+        sprintf(c,"%s",a);
+    }else{
+        sprintf(c,"%s%s",b,a);
+    }
 }
 
 char* atbash(char name[]) {
@@ -337,8 +345,9 @@ static int xmp_rename(const char *from, const char *to)
 	if (res == -1)
 		return -errno;
     printf("selesai rename\n");
-    char cmd[20] = "RENAME"; 
-    updatelog(cmd);
+    char desc[1000] = {0};
+	sprintf(desc,"%s::%s",from,to);
+    updatelog("INFO", "RENAME", desc);
 	return 0;
 }
 
@@ -370,8 +379,9 @@ static int xmp_mkdir(const char *path, mode_t mode)
         return -errno;
 
     printf("selesai mkdir\n");
-    char cmd[20] = "MKDIR"; 
-    updatelog(cmd);
+    char desc[1000] = {0};
+	strcpy(desc,fpath);
+    updatelog("INFO", "MKDIR", desc);
     return 0;
 }
 
@@ -437,12 +447,66 @@ static int xmp_read(const char *path, char *buf, size_t size, off_t offset,
     return res;
 }
 
+/*
+//belum diotak-atik
+static int xmp_unlink(const char *path)
+{
+	int res;
+
+	res = unlink(path);
+	if (res == -1)
+		return -errno;
+    char cmd[20] = "REMOVE"; 
+    updatelog(cmd);
+	return 0;
+}
+*/
+
+// //belum diotak-atik
+// static int xmp_rmdir(const char *path){
+// 	int res;
+//     char fpath[1000]={0};
+//     combinePath(path,dirpath,fpath);
+
+// 	res = rmdir(proses(fpath));
+// 	if (res == -1)
+// 		return -errno;
+
+// 	char desc[1000] = {0};
+// 	strcpy(desc,fpath);
+// 	updatelog("WARNING","RMDIR",desc);
+
+// 	return 0;
+// }
+
+/*
+//belum diotak-atik
+static int xmp_create(const char* path, mode_t mode, struct fuse_file_info* fi) {
+
+    (void) fi;
+
+    int res;
+    res = creat(path, mode);
+    if(res == -1)
+	return -errno;
+
+    close(res);
+
+    char cmd[20] = "CREATE"; 
+    updatelog(cmd);
+    return 0;
+}
+*/
+
 static struct fuse_operations xmp_oper = {
     .getattr = xmp_getattr,
     .readdir = xmp_readdir,
     .read = xmp_read,
     .mkdir = xmp_mkdir,
     .rename = xmp_rename,
+    // .unlink	= xmp_unlink,
+	// .rmdir = xmp_rmdir,
+    // .create = xmp_create,
 };
 
 int  main(int  argc, char *argv[])
