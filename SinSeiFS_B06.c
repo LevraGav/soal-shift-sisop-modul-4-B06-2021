@@ -224,13 +224,6 @@ void checkName(char filedir[]){
             ptr++;
             aisa(ptr);
         }
-        // else if (strstr(filedir,"abc")!=NULL){
-        //     char* ptr = strstr( filedir, "abc" );
-        //     ptr = strchr(ptr, '/');
-        //     ptr++;
-        //     printf("kONTOL 4\n");
-        //     rxrename(ptr);
-        //}
     }
 }
 
