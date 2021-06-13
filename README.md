@@ -288,3 +288,42 @@ void logRecord(char old_dir[], char new_dir[], int mode) {
 ```
 ### Kendala yang Dialami
 - Kurang mengerti dengan penggunaan Fuse sehingga masih berusaha untuk mengerjakan soal
+
+## Penjelasan No. 4
+Untuk memudahkan dalam memonitor kegiatan pada filesystem mereka Sin dan Sei membuat sebuah log system dengan spesifikasi sebagai berikut.
+
+### a. Log system yang akan terbentuk bernama “SinSeiFS.log” pada direktori home pengguna (/home/[user]/SinSeiFS.log).
+### b. Log yang dibuat akan dibagi menjadi dua level, yaitu INFO dan WARNING.
+### c. Untuk log level WARNING, digunakan untuk mencatat syscall rmdir dan unlink.
+### d. Sisanya, akan dicatat pada level INFO.
+### e. Format untuk logging yaitu: [Level]::[dd][mm][yyyy]-[HH]:[MM]:[SS]:[CMD]::[DESC :: DESC]
+
+## Cara Penyelesaian Nomor 4
+Mendefinisikan path dari file log yang akan diproses 
+```
+static  const  char *logpath = "/home/muthia/SinSeiFS.log"; 
+```
+Kemudian membuat fungsi yang akan digunakan untuk melakukan logging.
+```
+void mklog(char* level, char* cmd, int desctotal, const char* desc[])
+{
+    FILE* file = fopen(sysLog, "a");
+
+    time_t now;
+    time(&now);
+
+    struct tm* t = localtime(&now);
+    fprintf(file, "%s::%s::%02d%02d%04d-%02d:%02d:%02d", level, cmd, t->tm_mda>
+    for (int i = 0; i < desctotal; i++)
+    {
+        fprintf(file, "::%s", desc[i]);
+    }
+    fprintf(file, "\n");
+    fclose(file);
+}
+```
+Fungsi tersebut akan membuat log system sesuai dengan spesifikasi yang telah ditentukan.
+- `level` digunakan untuk mendefinisikan level dari atribut yang berjalan (INFO atau WARNING).
+- `cmd` digunakan untuk mendefinisikan command _system-call_ yang terpanggil.
+- `desctotal` digunakan untuk menyimpan banyaknya DESC yang akan ditulis di dalam log.
+- `*desc[]` digunakan untuk menyimpan _array of string_ dari DESC yang akan ditulis.
