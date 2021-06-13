@@ -10,24 +10,41 @@ Bayu Adjie Sidharta | 05111940000172
 
 ## Link-link
 - [Soal](https://docs.google.com/document/d/1KlAG2thAMm42so8BZMylw216EETVGu_DAM5PfwJzl5U/edit)
-- [Jawaban Soal](https://github.com/LevraGav/soal-shift-sisop-modul-3-B06-2021/tree/main/soal1)
+- [Jawaban Soal](https://github.com/LevraGav/soal-shift-sisop-modul-4-B06-2021/blob/main/SinSeiFS_B06.c)
 
 Kendala:
 - Belum memahami materi modul 4 terutama fuse dengan baik
 - Salah satu anggota kami memiliki kesulitan dalam penginstalan fuse, diduga berasal dari ubuntunya
 
-## Penjelasan No. 1
+# --- No 1 ---
 Di suatu jurusan, terdapat admin lab baru yang super duper gabut, ia bernama Sin. Sin baru menjadi admin di lab tersebut selama 1 bulan. Selama sebulan tersebut ia bertemu orang-orang hebat di lab tersebut, salah satunya yaitu Sei. Sei dan Sin akhirnya berteman baik. Karena belakangan ini sedang ramai tentang kasus keamanan data, mereka berniat membuat filesystem dengan metode encode yang mutakhir. Berikut adalah filesystem rancangan Sin dan Sei :
 
-### a. Jika sebuah direktori dibuat dengan awalan “AtoZ_”, maka direktori tersebut akan menjadi direktori ter-encode.
-### b. Jika sebuah direktori dibuat dengan awalan “AtoZ_”, maka direktori tersebut akan menjadi direktori ter-encode.
-### c. Apabila direktori yang terenkripsi di-rename menjadi tidak ter-encode, maka isi direktori tersebut akan terdecode.
-### d. Setiap pembuatan direktori ter-encode (mkdir atau rename) akan tercatat ke sebuah log. Format : /home/[USER]/Downloads/[Nama Direktori] → /home/[USER]/Downloads/AtoZ_[Nama Direktori]
-### e. Metode encode pada suatu direktori juga berlaku terhadap direktori yang ada di dalamnya.(rekursif)
+### Note
+```
+Semua file yang berada pada direktori harus ter-encode menggunakan Atbash cipher(mirror).
+Misalkan terdapat file bernama kucinglucu123.jpg pada direktori DATA_PENTING
+“AtoZ_folder/DATA_PENTING/kucinglucu123.jpg” → “AtoZ_folder/WZGZ_KVMGRMT/pfxrmtofxf123.jpg”
+Note : filesystem berfungsi normal layaknya linux pada umumnya, Mount source (root) filesystem adalah directory /home/[USER]/Downloads, dalam penamaan file ‘/’ diabaikan, dan ekstensi tidak perlu di-encode.
+Referensi : https://www.dcode.fr/atbash-cipher
+```
 
-## Cara Penyelesaian Nomor 1
-Untuk penyelesaian nomor a, b, c, dan e menggunakan fungsi yang sama yaitu getDirFile(). 
-Fungsi ini digunakan untuk melakukan encode/decode selama penggunaan Fuse. 
+## 1A
+Jika sebuah direktori dibuat dengan awalan ```AtoZ_```, maka direktori tersebut akan menjadi direktori ter-encode.
+
+## 1B 
+Jika sebuah direktori dibuat dengan awalan “AtoZ_”, maka direktori tersebut akan menjadi direktori ter-encode.
+
+## 1C
+Apabila direktori yang terenkripsi di-rename menjadi tidak ter-encode, maka isi direktori tersebut akan terdecode.
+
+## 1D
+Setiap pembuatan direktori ter-encode (mkdir atau rename) akan tercatat ke sebuah log. Format : <b>/home/[USER]/Downloads/[Nama Direktori] → /home/[USER]/Downloads/AtoZ_[Nama Direktori]</b>
+
+## 1E 
+Metode encode pada suatu direktori juga berlaku terhadap direktori yang ada di dalamnya.(rekursif)
+
+## Pembahasan No 1
+Untuk menyelesaikan no 1A, 1B, 1C, dan 1E, kami menggunakan fungsi getDirFile(). Fungsi ini sendiri digunakan untuk melakukan ```encode/decode``` ketika melakukan fuse.
 ```c
 char* getDirFile(char* path){
     char fullPath[2048];
