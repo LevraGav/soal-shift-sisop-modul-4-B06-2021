@@ -498,8 +498,8 @@ void logRecord(char old_dir[], char new_dir[], int mode)
 
 ### Bagian 2
 - Setelah dilakukan fuse antara direktori Downloads dengan folder tujuan, dapat dilihat bahwa untuk folder yang berawalan `AtoZ_` maka isi dari folder tersebut akan dilakukan encode, sedangkan untuk folder yang tidak berawalan `AtoZ_` tidak mengalami apapun.
-![isi folder atoz](https://user-images.githubusercontent.com/72689610/121817559-56f0e080-ccac-11eb-8768-0b0c897e3828.png)
-![isi folder hahaha](https://user-images.githubusercontent.com/72689610/121817568-5e17ee80-ccac-11eb-9ac3-2401acd83d3c.png)
+![isi folder atoz](https://user-images.githubusercontent.com/72689610/121817778-a552af00-ccad-11eb-93da-9a4ca90b96b0.png)
+
 
 ### Bagian 3
 - Kemudian kita akan mencoba untuk melakukan rename pada masing - masing folder. Bisa dilihat bahwa setelah folder yang berawalan `AtoZ_` di rename menjadi tidak berawalan `AtoZ_` maka semua isi dari folder tersebut akan di-decode oleh program. Hal yang sebaliknya juga berlaku jika folder yang tidak berawalan `AtoZ_` di rename menjadi berawalan `AtoZ_`. Efeknya adalah semua isi dari folder tersebut akan di-encode oleh program.
