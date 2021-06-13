@@ -8,6 +8,10 @@ Faisal Reza Maulana | 05111940000009
 Arvel Gavrilla R. | 05111940000040
 Bayu Adjie Sidharta | 05111940000172
 
+## Link-link
+- [Soal](https://docs.google.com/document/d/1KlAG2thAMm42so8BZMylw216EETVGu_DAM5PfwJzl5U/edit)
+- [Jawaban Soal](https://github.com/LevraGav/soal-shift-sisop-modul-3-B06-2021/tree/main/soal1)
+
 Kendala:
 - Belum memahami materi modul 4 terutama fuse dengan baik
 - Salah satu anggota kami memiliki kesulitan dalam penginstalan fuse, diduga berasal dari ubuntunya
