@@ -499,7 +499,7 @@ void logRecord(char old_dir[], char new_dir[], int mode)
 ### Bagian 2
 - Setelah dilakukan fuse antara direktori Downloads dengan folder tujuan, dapat dilihat bahwa untuk folder yang berawalan `AtoZ_` maka isi dari folder tersebut akan dilakukan encode, sedangkan untuk folder yang tidak berawalan `AtoZ_` tidak mengalami apapun.
 ![isi folder atoz](https://user-images.githubusercontent.com/72689610/121817778-a552af00-ccad-11eb-93da-9a4ca90b96b0.png)
-
+![isi folder hahaha](https://user-images.githubusercontent.com/72689610/121817855-185c2580-ccae-11eb-954b-b27f7f9cb30e.png)
 
 ### Bagian 3
 - Kemudian kita akan mencoba untuk melakukan rename pada masing - masing folder. Bisa dilihat bahwa setelah folder yang berawalan `AtoZ_` di rename menjadi tidak berawalan `AtoZ_` maka semua isi dari folder tersebut akan di-decode oleh program. Hal yang sebaliknya juga berlaku jika folder yang tidak berawalan `AtoZ_` di rename menjadi berawalan `AtoZ_`. Efeknya adalah semua isi dari folder tersebut akan di-encode oleh program.
@@ -510,6 +510,10 @@ void logRecord(char old_dir[], char new_dir[], int mode)
 - Selanjutnya kita akan mencoba untuk membuat folder baru. Dalam hal ini kami membuat folder baru yang berawalan `AtoZ_`. Jika kami memindahkan folder tersebut ke dalam folder yang berawalan `AtoZ_`, maka nama folder tersebut menjadi ter-encode karena sudah menjadi konten / isi dari sebuah folder yang berawalan `AtoZ_`.
 ![membuat folder baru](https://user-images.githubusercontent.com/72689610/121817718-3b3a0a00-ccad-11eb-9ab1-cd83c406c5e1.png)
 ![Memindahkan folder atoz leri ke dalam atoz hahaha](https://user-images.githubusercontent.com/72689610/121817729-49882600-ccad-11eb-84f2-569560f0f56b.png)
+
+### Bagian 5
+- Membuat Log untuk mencatat setiap perintah dan operasi yang dilakukan oleh program
+![Log NO 1](https://user-images.githubusercontent.com/72689610/121817878-404b8900-ccae-11eb-809c-0221b9c48dcd.png)
 
 # --- No 4 ---
 Untuk memudahkan dalam memonitor kegiatan pada filesystem mereka Sin dan Sei membuat sebuah log system dengan spesifikasi sebagai berikut.
