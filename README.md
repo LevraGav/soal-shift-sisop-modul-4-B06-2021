@@ -489,7 +489,27 @@ void logRecord(char old_dir[], char new_dir[], int mode)
 }
 ```
 
-### Output
+## Output
+### Bagian 1
+- Gambar di bawah menunjukkan keadaan awal di dalam direktori Downloads. Di dalam direktori Downloads terdapat 2 folder dengan isi yang dapat dilihat sebagai berikut.
+![keadaan awal di downloads](https://user-images.githubusercontent.com/72689610/121817345-16449780-ccab-11eb-8ed8-824c811a1072.png)
+![isi folder atoz awal](https://user-images.githubusercontent.com/72689610/121817352-25c3e080-ccab-11eb-8104-157ec544a96f.png)
+![isi folder awal di hahaha](https://user-images.githubusercontent.com/72689610/121817357-29effe00-ccab-11eb-90e9-98ca8d050f87.png)
+
+### Bagian 2
+- Setelah dilakukan fuse antara direktori Downloads dengan folder tujuan, dapat dilihat bahwa untuk folder yang berawalan `AtoZ_` maka isi dari folder tersebut akan dilakukan encode, sedangkan untuk folder yang tidak berawalan `AtoZ_` tidak mengalami apapun.
+![isi folder atoz](https://user-images.githubusercontent.com/72689610/121817559-56f0e080-ccac-11eb-8768-0b0c897e3828.png)
+![isi folder hahaha](https://user-images.githubusercontent.com/72689610/121817568-5e17ee80-ccac-11eb-9ac3-2401acd83d3c.png)
+
+### Bagian 3
+- Kemudian kita akan mencoba untuk melakukan rename pada masing - masing folder. Bisa dilihat bahwa setelah folder yang berawalan `AtoZ_` di rename menjadi tidak berawalan `AtoZ_` maka semua isi dari folder tersebut akan di-decode oleh program. Hal yang sebaliknya juga berlaku jika folder yang tidak berawalan `AtoZ_` di rename menjadi berawalan `AtoZ_`. Efeknya adalah semua isi dari folder tersebut akan di-encode oleh program.
+![atoz setelah rename](https://user-images.githubusercontent.com/72689610/121817654-df6f8100-ccac-11eb-841e-38a4b5fd2d86.png)
+![hahaha setelah rename](https://user-images.githubusercontent.com/72689610/121817657-e1394480-ccac-11eb-8a95-c21eb05824eb.png)
+
+### Bagian 4
+- Selanjutnya kita akan mencoba untuk membuat folder baru. Dalam hal ini kami membuat folder baru yang berawalan `AtoZ_`. Jika kami memindahkan folder tersebut ke dalam folder yang berawalan `AtoZ_`, maka nama folder tersebut menjadi ter-encode karena sudah menjadi konten / isi dari sebuah folder yang berawalan `AtoZ_`.
+![membuat folder baru](https://user-images.githubusercontent.com/72689610/121817718-3b3a0a00-ccad-11eb-9ab1-cd83c406c5e1.png)
+![Memindahkan folder atoz leri ke dalam atoz hahaha](https://user-images.githubusercontent.com/72689610/121817729-49882600-ccad-11eb-84f2-569560f0f56b.png)
 
 # --- No 4 ---
 Untuk memudahkan dalam memonitor kegiatan pada filesystem mereka Sin dan Sei membuat sebuah log system dengan spesifikasi sebagai berikut.
