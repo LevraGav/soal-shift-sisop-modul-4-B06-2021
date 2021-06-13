@@ -7,510 +7,446 @@
 #include <dirent.h>
 #include <errno.h>
 #include <sys/time.h>
-
-const char *dirpath = "/home/nor/Downloads";
-int algo = 0; 
-FILE * fp;
-
-void *updatelog(char *level, char *command, char *desc){
-    char time_now[100] = {0};
-    time_t t = time(NULL);
-    struct tm tm = *localtime(&t);
-    fp = fopen ("/home/nor/SinSeiFS.log", "a");
-    fprintf(fp, "%s::%02d%02d%d-%02d:%02d:%02d:%s::%s \n", level, tm.tm_mday, tm.tm_mon+1, tm.tm_year+1900, tm.tm_hour, tm.tm_min, tm.tm_sec, command,desc);
-    fclose(fp);
-}
-
-void combinePath(const char* a, char* b, char* c){
-    if(strcmp(a,"/")==0){
-        a = b;
-        sprintf(c,"%s",a);
-    }else{
-        sprintf(c,"%s%s",b,a);
-    }
-}
-
-char* atbash(char name[]) {
-    for (unsigned int i=0;i<strlen(name);i++){
-            if(name[i]>='A' && name[i]<='Z') {
-            name[i] = 'Z' - name[i] + 'A';
-        }
-
-        if(name[i]>='a' && name[i]<='z') {
-            name[i] = 'z' - name[i] + 'a';
-        }
-    }
-    return name;
-}
-
-char* rot13(char name[]) {
-    for (unsigned int i = 0; i < strlen(name); i++)
-    {
-        if(name[i]>='A' && name[i]<='Z') {
-            name[i] += 13;
-            if (name[i]>'Z') {
-                name[i]-=26;
-            }
-        }
-
-        if(name[i]>='a' && name[i]<='z') {
-            if (name[i] + 13 >'z') {
-                name[i] -= 26;
-            }
-            name[i] += 13;
-        }
-    }
-    return name;
-}
-
-char* rot13decrypt(char name[]) {
-    for (unsigned int i = 0; i < strlen(name); i++)
-    {
-        if(name[i]>='A' && name[i]<='Z') {
-            name[i] -= 13;
-            if (name[i] < 'A') {
-                name[i]+=26;
-            }
-        }
-        if(name[i]>='a' && name[i]<='z') {
-            if (name[i] - 13 < 'a') {
-                name[i] += 26;
-            }
-            name[i] -= 13;
-        }
-    }
-    return name;
-}
-
-long long int binarytodec (long long int biner) {
-	long long int decimal_num = 0, base = 1, rem;  
-	while ( biner > 0)  
-    {  
-        rem = biner % 10; 
-        decimal_num = decimal_num + rem * base;  
-        biner = biner / 10; 
-        base = base * 2;  
-    } 
-    return decimal_num;
-}
-
-long long int casebinary(char name[]) {
-    char binary[100];
-    for (unsigned int i = 0; i < strlen(name); i++)
-    {
-        if(name[i]>='A' && name[i]<='Z') {
-            strcat(binary,"1");
-        }
-        else {
-            strcat(binary,"0");
-        }
-    }
-    long long int biner = atoi(binary);
-    return binarytodec(biner);
-}
-
-char* lowercase(char name[]) {
-    for (unsigned int i = 0; i < strlen(name); i++)
-    {
-        name[i] = tolower(name[i]);
-    }
-    return name;
-}
-
-char* vignere(char name[]){
-    char key[5] = "SISOP";
-    int Kcount = 0;
-    for (unsigned int i=0;i<strlen(name);i++) {
-        if(name[i]>='A' && name[i]<='Z') {
-            name[i] += key[Kcount] - 'A';
-            if (name[i] > 'Z') {
-                name[i]-=26;
-            }
-        }
-        if(name[i]>='a' && name[i]<='z') {
-            if (name[i] + key[Kcount] - 'A' > 'z') {
-                name[i] -= 26;
-            }
-            name[i] += key[Kcount] - 'A';
-        }
-        Kcount++;
-        if(Kcount == 5) {
-            Kcount=0;
-        }
-    }
-    return name;
-}
-
-char* vigneredecrypt(char name[]){
-    char key[5] = "SISOP";
-    int Kcount = 0;
-    for (unsigned int i=0;i<strlen(name);i++) {
-        if(name[i]>='A' && name[i]<='Z') {
-            name[i] -= key[Kcount] - 'A';
-            if (name[i] < 'A') {
-                name[i]+=26;
-            }
-        }
-        if(name[i]>='a' && name[i]<='z') {
-            if (name[i] - key[Kcount] + 'A' < 'a') {
-                name[i] += 26;
-            }
-            name[i] -= key[Kcount] - 'A';
-        }
-        Kcount++;
-        if(Kcount == 5) {
-            Kcount=0;
-        }
-    }
-    return name;
-}
+#include <stdbool.h>  
 
 
-char* rx(char name[]) {
-	rot13(name);
-	char* ptr = strchr(name,'.');
-    if (ptr != NULL){
-	    rot13decrypt(ptr);
-    }
-	return name;
-}
+static  const  char *dirpath = "/home/muthia/Downloads";
+static  const  char *logpath = "/home/muthia/SinSeiFS.log"; 
 
-char* atoz(char name[]){
-    printf("name1: %s\n",name);
-	atbash(name);
-    printf("name2: %s\n",name);
-    char* ptr = strchr(name,'.');
-    if (ptr != NULL){
-        atbash(ptr);
-    }
-    return name;
-}
+char *en1 = "/AtoZ_";
+int flagGlobal;
 
-char* rxrename(char name[]) {
-	atbash(name);
-    char* ptr = strchr(name,'.');
-    if (ptr != NULL){
-        atbash(ptr);
-    }
-    char ext[20];
-    strcpy(ext,ptr);
-    if (ptr != NULL){
-        vignere(name);
-    }
-    strcpy(ptr,ext);
-	return name;
-}
+//struct data {
+//    char command[100];
+//    char desc[100];
+//};
 
-void aisa(char name[]){
-	//pass
-} 
-
-void checkName(char filedir[]){
-    if (strcmp(filedir,"/") == 0 ) {
-        filedir = "/home/bayu/Downloads";
-    }
-	else {
-        if (strstr(filedir,"RX_")!=NULL){
-            char* ptr = strstr( filedir, "RX_" );
-            ptr = strchr(ptr, '/');
-            ptr++;
-            atoz(ptr);
-            rx(ptr);
-        }
-        else if (strstr(filedir,"AtoZ_")!=NULL){
-            char* ptr = strstr( filedir, "AtoZ_" );
-            ptr = strchr(ptr, '/');
-            if(ptr==NULL) {
-                return;
-            }
-            ptr++;
-            atoz(ptr);
-        }
-        else if (strstr(filedir,"A_is_a_")!=NULL){
-            char* ptr = strstr( filedir, "A_is_a_" );
-            ptr = strchr(ptr, '/');
-            ptr++;
-            aisa(ptr);
-        }
-    }
-}
-
-int rename_dirs_atoz(const char *path)
+// Membuat Log
+void mklog(char* level, char* cmd, int desctotal, const char* desc[])
 {
-    struct dirent *dp;
-    DIR *dfd;
+    FILE* file = fopen(sysLog, "a");
 
+    time_t now;
+    time(&now);
 
-    if ((dfd = opendir(path)) == NULL) {
-        fprintf(stderr, "Can't open %s\n", path);
-        return 0;
-    }
-    char filename_qfd[1024] ;
-    char new_name_qfd[1024] ;
-    while ((dp = readdir(dfd)) != NULL) {
-        struct stat stbuf ;
-        sprintf( filename_qfd , "%s/%s",path,dp->d_name) ;
-        printf("filename_qfd: %s\n",filename_qfd);
-        if( stat(filename_qfd,&stbuf ) == -1 ) {
-            printf("Unable to stat file: %s\n",filename_qfd) ;
-            continue ;
-        }
-        if ( ( stbuf.st_mode & S_IFMT ) == S_IFDIR ) {
-            continue;
-            // Skip directories
-        }
-        else {
-            char new_name[1024] = {"0"};
-            strcpy(new_name,dp->d_name);
-            atoz(new_name);
-            sprintf(new_name_qfd,"%s/%s",path,new_name) ;
-            printf("From file:%s \t To File:%s\n",filename_qfd,new_name_qfd);
-            rename( filename_qfd , new_name_qfd ) ;
-        }
-    }
-    struct dirent *direntp = NULL;
-    DIR *dirp = NULL;
-    unsigned int path_len = strlen(path);  
-
-    /* Open directory */
-    dirp = opendir(path);
-
-    if (dirp == NULL)
-        return -1;
-
-    while ((direntp = readdir(dirp)) != NULL)
+    struct tm* t = localtime(&now);
+    fprintf(file, "%s::%s::%02d%02d%04d-%02d:%02d:%02d", level, cmd, t->tm_mday, t->tm_mon+1, t->tm_year+1900, t->tm_hour, t->tm_min, t->tm_sec);
+    for (int i = 0; i < desctotal; i++)
     {
-        /* For every directory entry... */
-        struct stat fstat;
-        char full_name[1024];
+        fprintf(file, "::%s", desc[i]);
+    }
+    fprintf(file, "\n");
+    fclose(file);
+}
 
-        /* Calculate full name, check we are in file length limts */
 
-        strcpy(full_name, path);
-        if (full_name[path_len - 1] != '/')
-            strcat(full_name, "/");
-        strcat(full_name, direntp->d_name);
+char* getDirFile(char* path){
+    char fullPath[2048];
+    char rpath[2048];
+    char tipe[2048];
+    char namaFile[2048];
+    char namaFolder[2048];
+    // char *ketemu;
+    char buf[2048];
+    char temp[2048];
+    // char slash = '/';
+    // char dot = '.';
 
-        /* Ignore special directories. */
-        if ((strcmp(direntp->d_name, ".") == 0) ||
-            (strcmp(direntp->d_name, "..") == 0))
-            continue;
 
-        /* Print only if it is really directory. */
-        if (stat(full_name, &fstat) < 0)
-            continue;
-        if (S_ISDIR(fstat.st_mode))
-        {
-            printf("FULL NAME: %s\n", full_name);
-            char oldname[1024] = {0};
-            strcpy(oldname,full_name);
-            char * slash = strrchr(full_name, '/');
-            printf("Slash: %s\n", slash);
-            if(slash==NULL) {
-                return 0;
-            }
-            slash++;
-            atoz(slash);
-            printf("Rename: %s\n", slash);
-            rename(oldname,full_name);
-            rename_dirs_atoz(full_name);
+    memset(fullPath, 0, sizeof(fullPath));
+    memset(rpath, 0, sizeof(rpath));
+    memset(namaFile, 0, sizeof(namaFile));
+    memset(namaFolder, 0, sizeof(namaFolder));
+    memset(tipe, 0, sizeof(tipe));
+
+
+    int i;
+    bool isEncrypted = false;
+
+    // if(!strcmp(path, "/")){
+    //     path = "/home/dyandra/Downloads";
+    //     strcpy(fullPath, path);
+    // }
+    char *ketemu;
+    if (strcmp(path, "/")){
+        ketemu = strstr(path, en1);
+        if(ketemu){
+            isEncrypted = true;
+            flagGlobal = 1;
+            ketemu++;
         }
     }
 
-    /* Finalize resources. */
-    (void)closedir(dirp);
-    return 0;
-}
-
-
-static int xmp_rename(const char *from, const char *to)
-{
-	int res;
-    char fpath[1024] = {0};
-    char tpath[1024] = {0};
-    strcat(fpath,dirpath);
-    strcat(fpath, from);
-    strcat(tpath,dirpath);
-    strcat(tpath, to);
-    printf("from: %s\nto: %s\n",fpath,tpath);
-    if(strstr(fpath,"AtoZ_")!=NULL | strstr(tpath,"AtoZ_")!=NULL) {
-        rename_dirs_atoz(fpath);
-        FILE* file = fopen("activity.log", "a");
-        char msg[4096] = {0};
-        sprintf(msg,"%s -> %s\n",fpath,tpath);
-        fputs(msg,file);
-        fclose(file);
+    if(!strcmp(path, "/")){
+        path = dirpath;
+        strcpy(fullPath, path);
     }
-	res = rename(fpath, tpath);
-	if (res == -1)
-		return -errno;
-    printf("selesai rename\n");
-    char desc[1000] = {0};
-	sprintf(desc,"%s::%s",from,to);
-    updatelog("INFO", "RENAME", desc);
-	return 0;
-}
 
-static int xmp_mkdir(const char *path, mode_t mode)
-{
+    else if (isEncrypted){
+        // int minus = strlen(path) - strlen(ketemu);
+        strncpy(rpath, path, strlen(path) - strlen(ketemu));
 
-    printf("mulai mkdir\n");
-    printf("%s\n", path);
-    char fpath[1024] = {0};
-    strcat(fpath,dirpath);
-    strcat(fpath, path);
-    checkName(fpath);
-    char* ptr = strchr(fpath, '/');
-    if (strstr(ptr, "/AtoZ_")) {
-        FILE* file = fopen("activity.log", "a");
-        char msg[4096] = {0};
-        char before[1024] = {0};
-        strcpy(before,fpath);
-        char *p = strrchr(before, '/');
-        *p = 0;
-        sprintf(msg,"%s -> %s\n",before,fpath);
-        fputs(msg,file);
-        fclose(file);
+        strcpy(buf, ketemu);
+        char *a; 
+        char *b = buf;
+
+        i = 0;
+        a=strtok_r(b, "/", &b);
+        for(;a!=NULL;a=strtok_r(NULL, "/", &b)){
+            memset(temp, 0, sizeof(temp));
+
+            if (!i){
+                strcpy(temp, a);
+                strcat(rpath, temp);
+
+                i = 1;
+                
+                continue;
+            }
+
+            strcpy(tipe, rpath);
+            strcat(tipe, "/");
+            // strcat(rpath, slash);
+            strcat(tipe, a);
+
+            int lengthTipe = strlen(tipe);
+            int lengthPath = strlen(path);
+
+            if (lengthTipe != lengthPath){
+                strcpy(namaFolder, a);
+                int j = 0;
+                for(; j<strlen(namaFolder); j++){
+                    if(namaFolder[j] >= 'A' && namaFolder[j] <= 'Z'){
+                        namaFolder[j] = 'Z' + 'A' - namaFolder[j];
+                    }
+
+                    else if (namaFolder[j] >= 'a' && namaFolder[j] <= 'z'){
+                        namaFolder[j] = 'z' + 'a' - namaFolder[j];
+                    }
+                }
+                strcat(rpath, namaFolder);
+            }
+
+            else if(lengthTipe == lengthPath){
+                char Folder[2048];
+                strcpy(Folder, dirpath);
+                strcat(rpath, "/");
+                strcat(Folder, rpath);
+                strcat(Folder, a);
+
+                // printf("%s", Folder);
+                DIR *dp = opendir(Folder);
+
+                if(dp){
+                    strcpy(namaFolder, a);
+                    int j = 0;
+                    for(; j<strlen(namaFolder); j++){
+                        if(namaFolder[j] >= 'A' && namaFolder[j] <= 'Z'){
+                            namaFolder[j] = 'Z' + 'A' - namaFolder[j];
+                        }
+
+                        else if (namaFolder[j] >= 'a' && namaFolder[j] <= 'z'){
+                            namaFolder[j] = 'z' + 'a' - namaFolder[j];
+                        }
+                    }
+                    strcat(rpath, namaFolder);
+                }
+
+                else if(dp == 0){
+                    char *titik = strchr(a, '.');
+
+                    if(titik != 0){
+                        int minus2 = strlen(a) - strlen(titik);
+                        strncpy(namaFile, a, minus2);
+
+                        int j = 0;
+                        for(; j<strlen(namaFile); j++){
+                            if(namaFile[j] >= 'A' && namaFile[j] <= 'Z'){
+                               namaFile[j] = 'Z' + 'A' - namaFile[j];
+                            }
+
+                            else if (namaFile[j] >= 'a' && namaFile[j] <= 'z'){
+                                namaFile[j] = 'z' + 'a' - namaFile[j];
+                            }
+                        }
+                        strcat(namaFile, titik) ;
+                        }
+                        // strcat(namaFile, titik) ;
+                    
+
+                    else{
+                        strcpy(namaFile, a);
+                       int j = 0;
+                        for(; j<strlen(namaFile); j++){
+                            if(namaFile[j] >= 'A' && namaFile[j] <= 'Z'){
+                               namaFile[j] = 'Z' + 'A' - namaFile[j];
+                            }
+
+                            else if (namaFile[j] >= 'a' && namaFile[j] <= 'z'){
+                                namaFile[j] = 'z' + 'a' - namaFile[j];
+                            }
+                        }
+
+                    }strcat(rpath, namaFile);
+                }
+            }
+
+
+
+        }
+        strcpy(fullPath, dirpath);
+        strcat(fullPath, rpath);
     }
-    int res;
-    printf("%s\n",fpath);
-    res = mkdir(fpath, mode);
-    if (res == -1)
-        return -errno;
+    else{
+        strcpy(fullPath, dirpath);
+        strcat(fullPath, path);
 
-    printf("selesai mkdir\n");
-    char desc[1000] = {0};
-	strcpy(desc,fpath);
-    updatelog("INFO", "MKDIR", desc);
-    return 0;
-}
-
-static int xmp_getattr(const char *path, struct stat *stbuf)
-{
-    char fpath[1024] = {0};
-    strcat(fpath,dirpath);
-    strcat(fpath, path);
-    int res;
-    res = lstat(fpath, stbuf);
-    if (res == -1)
-        return -errno;
-    return 0;
+    }
+    char* result = fullPath;
+    return result;
 }
 
 
 static int xmp_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
-               off_t offset, struct fuse_file_info *fi)
+		       off_t offset, struct fuse_file_info *fi)
 {
-    char fpath[1024] = {0};
-    strcat(fpath,dirpath);
-    strcat(fpath, path);
-    int res;
-    DIR *dp;
-    struct dirent *de;
+    // path = /abcde
+    char fullPath[1000];
+    memset(fullPath, 0, 1000) ;
+    flagGlobal = 0 ;
+    strcpy(fullPath, getDirFile(path)) ;
 
-    (void) offset;
-    (void) fi;
+    int res = 0 ;
+	DIR *dp;
+	struct dirent *de;
 
-    dp = opendir(fpath);
-    if (dp == NULL)
-        return -errno;
+	(void) offset;
+	(void) fi;
 
-    while ((de = readdir(dp)) != NULL) {
-        struct stat st;
-        memset(&st, 0, sizeof(st));
-        st.st_ino = de->d_ino;
-        st.st_mode = de->d_type << 12;
-        res = (filler(buf, de->d_name, &st, 0));
+	dp = opendir(fullPath);
+	if (dp == NULL)
+		return -errno;
+
+	while ((de = readdir(dp)) != NULL) {
+		struct stat st;
+		memset(&st, 0, sizeof(st));
+		st.st_ino = de->d_ino;
+		st.st_mode = de->d_type << 12;
+
+        if (strcmp(de->d_name, ".") == 0 || strcmp(de->d_name, "..") == 0) {
+            res = (filler(buf, de->d_name, &st, 0)) ;
+        }
+        else if (flagGlobal) {
+            if (de->d_type & DT_DIR) {
+                char temp[1024] ;
+                memset(temp, 0, 1024) ;
+                strcpy(temp, de->d_name) ;
+                int j;
+                for(j = 0; j<strlen(temp); j++){
+                        if(temp[j] >= 'A' && temp[j] <= 'Z'){
+                        temp[j] = 'Z' + 'A' - temp[j];
+                    }
+
+                    else if (temp[j] >= 'a' && temp[j] <= 'z'){
+                        temp[j] = 'z' + 'a' - temp[j];
+                    }
+                }
+                res = (filler(buf, temp, &st, 0));
+            }
+            else {
+                char* dot ;
+                dot = strchr(de->d_name, '.') ;
+                
+                char namaFile[1024] ;
+                memset(namaFile, 0, 1024) ;
+                if (dot) {
+                    strncpy(namaFile, de->d_name, strlen(de->d_name) - strlen(dot)) ;
+                        int i;
+                        for(i = 0; i<strlen(namaFile); i++){
+                            if(namaFile[i] >= 'A' && namaFile[i] <= 'Z'){
+                                namaFile[i] = 'Z' + 'A' - namaFile[i];
+                            }
+
+                            else if (namaFile[i] >= 'a' && namaFile[i] <= 'z'){
+                                namaFile[i] = 'z' + 'a' - namaFile[i];
+                            }
+                        }
+                    strcat(namaFile, dot) ;
+                }
+                else {
+                    strcpy(namaFile, de->d_name) ;
+                        int i;
+                        for(i = 0; i<strlen(namaFile); i++){
+                            if(namaFile[i] >= 'A' && namaFile[i] <= 'Z'){
+                                namaFile[i] = 'Z' + 'A' - namaFile[i];
+                            }
+
+                            else if (namaFile[i] >= 'a' && namaFile[i] <= 'z'){
+                                namaFile[i] = 'z' + 'a' - namaFile[i];
+                            }
+                        }
+                }
+                res = (filler(buf, namaFile, &st, 0));
+            }
+        }
+        else 
+            res = (filler(buf, de->d_name, &st, 0));
+        
+
         if(res!=0) break;
-    }
-    closedir(dp);
-    return 0;
+	}
+
+	closedir(dp);
+
+	const char* desc[] = {path};
+	mklog("INFO", "READDIR", 1, desc);
+	return 0;
 }
 
-static int xmp_read(const char *path, char *buf, size_t size, off_t offset,
-            struct fuse_file_info *fi)
+
+static int xmp_read(const char *path, char *buf, size_t size, off_t offset, struct fuse_file_info *fi)
 {
+
+    char fullPath[2048];
+    memset(fullPath, 0, sizeof(fullPath));
+
+    // char getPath[2048] = getDirFile(path);
+    strcpy(fullPath, getDirFile(path));
 
     int fd;
     int res;
-
     (void) fi;
-    fd = open(path, O_RDONLY);
-    if (fd == -1)
-        return -errno;
+
+    fd = open(fullPath, O_RDONLY);
+
+    if (fd == -1) return -errno;
 
     res = pread(fd, buf, size, offset);
-    if (res == -1)
-        res = -errno;
+
+    if (res == -1) res = -errno;
 
     close(fd);
+
+    const char* desc[] = {path};
+    mklog("INFO", "READ", 1, desc);
     return res;
 }
 
-/*
-//belum diotak-atik
-static int xmp_unlink(const char *path)
+static  int  xmp_getattr(const char *path, struct stat *stbuf)
 {
-	int res;
+    char fullPath[2048];
+    memset(fullPath, 0, sizeof(fullPath));
 
-	res = unlink(path);
-	if (res == -1)
-		return -errno;
-    char cmd[20] = "REMOVE"; 
-    updatelog(cmd);
-	return 0;
-}
-*/
-
-// //belum diotak-atik
-// static int xmp_rmdir(const char *path){
-// 	int res;
-//     char fpath[1000]={0};
-//     combinePath(path,dirpath,fpath);
-
-// 	res = rmdir(proses(fpath));
-// 	if (res == -1)
-// 		return -errno;
-
-// 	char desc[1000] = {0};
-// 	strcpy(desc,fpath);
-// 	updatelog("WARNING","RMDIR",desc);
-
-// 	return 0;
-// }
-
-/*
-//belum diotak-atik
-static int xmp_create(const char* path, mode_t mode, struct fuse_file_info* fi) {
-
-    (void) fi;
+    // char getPath[2048] = getDirFile(path);
+    strcpy(fullPath, getDirFile(path));
 
     int res;
-    res = creat(path, mode);
-    if(res == -1)
-	return -errno;
+    res = lstat(fullPath, stbuf);
 
-    close(res);
+    if (res == -1) return -errno;
 
-    char cmd[20] = "CREATE"; 
-    updatelog(cmd);
+    const char* desc[] = {path};
+    mklog("INFO", "READ", 1, desc);
     return 0;
 }
-*/
+
+void log_rename(char *src, char *dst){
+    char *lastSlash = strchr(dst, '/');
+    if (strstr(lastSlash, "/AtoZ_")) {
+        char t1[1024] ; bzero(t1, 1024) ;
+        char t2[1024] ; bzero(t2, 1024) ;
+        sprintf(t1, "%s%s", dirpath, src) ;
+        sprintf(t2, "%s%s", dirpath, dst) ;
+        logRecord(t1, t2, 1) ;
+    }
+}
+
+
+void log_mkdir(char *path){
+    char* lastSlash = strchr(path, '/') ;
+    if (strstr(lastSlash, "/AtoZ_")) {
+    char temp[1024] ; bzero(temp, 1024) ;
+    sprintf(temp, "%s%s", dirpath, path) ;
+    logRecord("null", temp, 2) ;
+    }
+}
+
+void logRecord(char old_dir[], char new_dir[], int mode) {
+    FILE* file = fopen("encode.log", "a") ;
+
+    char str[2048] ;
+    if (mode == 1) {
+        sprintf(str, "%s --> %s", old_dir, new_dir) ;
+
+        fprintf(file, "%s\n", str) ;
+    }
+    else if (mode == 2) {
+        sprintf(str, "%s", new_dir) ;
+
+        fprintf(file, "%s\n", str) ;
+    }
+
+    fclose(file) ;
+}
+
+static int xmp_rename(const char *from, const char *to)
+{
+
+    log_rename(from, to);
+    char f_from[2048]; 
+    char f_to[2048];
+    memset(f_from, 0, sizeof(f_from)) ; 
+    memset(f_to, 0, sizeof(f_to)) ;
+    strcpy(f_from, getDirFile(from)) ;
+    strcpy(f_to, getDirFile(to)) ;
+
+	int res;
+
+	res = rename(f_from, f_to);
+	if (res == -1)
+		return -errno;
+
+        const char* desc[] = {from, to};
+        mklog("INFO", "RENAME", 2, desc);
+
+	return 0;
+}
+
+
+
+static int xmp_mkdir(const char *path, mode_t mode)
+{
+    log_mkdir(path);
+    char fullPath[2048] ;
+    memset(fullPath, 0, sizeof(fullPath)) ;
+    strcpy(fullPath, getDirFile(path)) ;
+    
+	int res;
+
+	res = mkdir(fullPath, mode);
+	if (res == -1)
+		return -errno;
+
+        const char* desc[] = {path};
+        mklog("INFO", "MKDIR", 1, desc);
+
+	return 0;
+}
 
 static struct fuse_operations xmp_oper = {
     .getattr = xmp_getattr,
     .readdir = xmp_readdir,
     .read = xmp_read,
-    .mkdir = xmp_mkdir,
     .rename = xmp_rename,
-    // .unlink	= xmp_unlink,
-	// .rmdir = xmp_rmdir,
-    // .create = xmp_create,
+    .mkdir = xmp_mkdir,
 };
+
+/* End XMP Field */
 
 int  main(int  argc, char *argv[])
 {
+    
     umask(0);
+
     return fuse_main(argc, argv, &xmp_oper, NULL);
-}	
+}
