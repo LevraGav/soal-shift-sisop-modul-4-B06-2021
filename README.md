@@ -556,7 +556,7 @@ static  const  char *logpath = "/home/arvel/SinSeiFS.log";
 
 ### Bagian 2
 Membuat fungsi untuk melakukan logging.
-```
+```c
 void mklog(char* level, char* cmd, int desctotal, const char* desc[])
 {
     FILE* file = fopen(sysLog, "a");
@@ -577,3 +577,10 @@ void mklog(char* level, char* cmd, int desctotal, const char* desc[])
 Fungsi di atas akan dipanggil pada fungsi `mkdir`, `mknode`, `unlink`, `rmdir`, `rename`, dan `write`. Fungsi tersebut akan menuliskan info/warning, timestamp saat operasi dilakukan, beserta keterangannya. Untuk warning akan digunakan saat `unlink` dan `rmdir`, sedangkan yang lainnya merupakan info.
 
 ### Output
+### Bagian 1
+- Menggunakan perintah rmdir untuk menghapus folder
+![Menghapus folder lulz](https://user-images.githubusercontent.com/72689610/121817962-9b7d7b80-ccae-11eb-87fd-29087dfde624.png)
+
+### Bagian 2
+- Membuat Log untuk mencatat setiap perintah dan operasi yang dilakukan oleh program
+![Log No 4](https://user-images.githubusercontent.com/72689610/121817987-b3ed9600-ccae-11eb-8e7d-a8856e66b516.png)
